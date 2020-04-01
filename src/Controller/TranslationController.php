@@ -16,9 +16,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class TranslationController extends AbstractController
 {
     /**
-     * @Route("/strings", name="strings")
+     * @Route("/", name="translation_home")
      */
     public function index(EntityManagerInterface $em)
+    {
+        return $this->render('translation/index.html.twig');
+    }
+
+    /**
+     * @Route("/strings", name="strings")
+     */
+    public function strings(EntityManagerInterface $em)
     {
         return $this->render('translation/strings.html.twig', [
             'translations' => $em->getRepository(Translation::class)

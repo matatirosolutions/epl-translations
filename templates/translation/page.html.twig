@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pages{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-2">
+            <table class="table table-borderless">
+                <tbody>
+                <h2>Pages</h2>
+                {% for page in pages %}
+                    <tr>
+                        <td><a href="{{ path('page', {'uuid': page.uuid}) }}">{{ page.title }}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-5">
+            {{ page.french|raw }}
+        </div>
+        <div class="col-5">
+            <div class="page" data-uuid="{{ page.uuid }}">
+                {{ page.english|raw }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

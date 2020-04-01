@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Strings{% endblock %}
+
+{% block body %}
+    <h2>Strings</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>French</th>
+                <th>English</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for translation in translations %}
+                <tr>
+                    <td>{{ translation.uuid }}</td>
+                    <td>{{ translation.french }}</td>
+                    <td style="width:45%">
+                        <textarea class="form-control string-translation" data-uuid="{{ translation.uuid }}">{{ translation.english }}</textarea>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

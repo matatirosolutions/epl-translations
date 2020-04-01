@@ -1,0 +1,13 @@
+@import "~bootstrap/scss/bootstrap";
+@import "~toastr/toastr.scss";
+@import "~summernote/dist/summernote-bs4.min.css";
+
+body {
+  padding-top: 5rem;
+}
+.template {
+  padding: 0 1rem;
+}
+.string-translation {
+  min-height: 120px;
+}

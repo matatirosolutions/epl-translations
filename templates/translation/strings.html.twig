@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             {% for translation in translations %}
-                <tr>
+                <tr {% if translation.french == translation.english %}class="untranslated"{% endif %}>
                     <td>{{ translation.uuid }}</td>
                     <td>{{ translation.french }}</td>
                     <td style="width:45%">

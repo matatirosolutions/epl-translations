@@ -16,9 +16,11 @@ require('summernote');
 
 $(document).ready(function() {
     $('.string-translation').change(function() {
-        var id = $(this).data('uuid');
+        var row = $(this).parents('tr'),
+            id = $(this).data('uuid');
         $.post('/translation/string/' + id, {text: $(this).val()}, function() {
-            toastr["success"]("Saved")
+            toastr["success"]("Saved");
+            row.removeClass('untranslated');
         });
     });
 

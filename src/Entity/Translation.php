@@ -20,10 +20,17 @@ class Translation
     /**
      * @var string
      *
-     * @ORM\Column(name="ID", type="string", length=255)
+     * @ORM\Column(name="PrimaryKey", type="string", length=255)
      * @ORM\Id
      */
     private $uuid;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ID", type="string", length=255)
+     */
+    private $stringId;
 
     /**
      * @ORM\Column(name="French", type="text")
@@ -69,5 +76,13 @@ class Translation
         $this->english = $english;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStringId(): string
+    {
+        return $this->stringId;
     }
 }

@@ -18,9 +18,13 @@ $(document).ready(function() {
     $('.string-translation').change(function() {
         var row = $(this).parents('tr'),
             id = $(this).data('uuid');
-        $.post('/translation/string/' + id, {text: $(this).val()}, function() {
-            toastr["success"]("Saved");
-            row.removeClass('untranslated');
+        $.post('/translation/string/' + id, {text: $(this).val()}, function(resp) {
+            if(resp.success) {
+                toastr["success"]("Saved");
+                row.removeClass('untranslated');
+            } else {
+                toastr["error"]("Something went wrong. Please try again later");
+            }
         });
     });
 

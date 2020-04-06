@@ -42,6 +42,13 @@ class Page
      */
     private $title;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="File", type="string", length=255)
+     */
+    private $file;
+
     public function getUuid(): string
     {
         return $this->uuid;
@@ -84,5 +91,13 @@ class Page
     public function getTitle(): string
     {
         return $this->title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFile(): string
+    {
+        return $this->file;
     }
 }

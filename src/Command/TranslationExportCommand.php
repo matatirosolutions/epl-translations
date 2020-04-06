@@ -17,7 +17,7 @@ class TranslationExportCommand extends Command
     /** @var EntityManagerInterface */
     protected $entityManager;
 
-    protected static $defaultName = 'translation:export';
+    protected static $defaultName = 'translation:export:strings';
 
     /**
      * TranslationExportCommand constructor.
@@ -34,7 +34,7 @@ class TranslationExportCommand extends Command
     {
         $this
             ->setDescription('Export translations')
-            ->addArgument('path', InputArgument::OPTIONAL, 'Path to export to. Existing files will be overwritten.')
+            ->addArgument('path', InputArgument::OPTIONAL, 'File, including full path to export to. Existing files will be overwritten.')
         ;
     }
 
@@ -67,8 +67,8 @@ class TranslationExportCommand extends Command
 
         foreach($translations as $translation) {
             $trans = $xml->{'file'}->{'body'}->addChild('trans-unit');
-            $trans->addAttribute('id', $this->cleanContent($translation->getUuid()));
-            $trans->addAttribute('resname', $this->cleanContent($translation->getUuid()));
+            $trans->addAttribute('id', $this->cleanContent($translation->getStringId()));
+            $trans->addAttribute('resname', $this->cleanContent($translation->getStringId()));
             $trans->addChild('source', $this->cleanContent($translation->getFrench()));
             $trans->addChild('target', $this->cleanContent($translation->getEnglish()));
         }

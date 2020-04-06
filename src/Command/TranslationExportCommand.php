@@ -50,13 +50,14 @@ class TranslationExportCommand extends Command
             return -1;
         }
 
+        $locale = 'en_NZ' === $input->getArgument('locale') ? 'en' : $input->getArgument('locale');
         try {
             $translations = $this->entityManager->getRepository(Translation::class)
                 ->findAll();
             $this->writeToFile(
                 $input->getArgument('path'),
-                $input->getArgument('locale'),
-                $this->convertFromDB($input->getArgument('locale'), $translations)
+                $locale,
+                $this->convertFromDB($locale, $translations)
             );
         } catch (RuntimeException $exception) {
             $io->error($exception->getMessage());
@@ -67,6 +68,7 @@ class TranslationExportCommand extends Command
     }
 
     /**
+     * @param string $locale
      * @param Translation[]|object[] $translations
      * @return SimpleXMLElement
      */
@@ -81,7 +83,7 @@ class TranslationExportCommand extends Command
             $trans->addChild('source', $this->cleanContent($translation->getFrench()));
 
             switch($locale){
-                case 'en_NZ':
+                case 'en':
                     $trans->addChild('target', $this->cleanContent($translation->getEnglish()));
                     break;
                 case 'se':
@@ -93,12 +95,12 @@ class TranslationExportCommand extends Command
         return $xml;
     }
 
-    private function createEmptyXliffFile($language): SimpleXMLElement
+    private function createEmptyXliffFile($locale): SimpleXMLElement
     {
         $xml = new SimpleXMLElement('<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2"/>');
         $file = $xml->addChild('file');
         $file->addAttribute('source-language', 'fr');
-        $file->addAttribute('target-language', $language);
+        $file->addAttribute('target-language', $locale);
         $file->addAttribute('datatype', 'plaintext');
         $file->addAttribute('original', 'file.ext');
         $file->addChild('body');

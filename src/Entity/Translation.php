@@ -22,6 +22,7 @@ class Translation
      *
      * @ORM\Column(name="PrimaryKey", type="string", length=255)
      * @ORM\Id
+     * @ORM\GeneratedValue()
      */
     private $uuid;
 
@@ -41,6 +42,11 @@ class Translation
      * @ORM\Column(name="English", type="text", nullable=true)
      */
     private $english;
+
+    /**
+     * @ORM\Column(name="Swedish", type="text", nullable=true)
+     */
+    private $swedish;
 
     public function getUuid(): string
     {
@@ -78,11 +84,27 @@ class Translation
         return $this;
     }
 
-    /**
-     * @return string
-     */
+    public function getSwedish(): ?string
+    {
+        return $this->swedish;
+    }
+
+    public function setSwedish(?string $swedish): self
+    {
+        $this->swedish = $swedish;
+
+        return $this;
+    }
+
     public function getStringId(): string
     {
         return $this->stringId;
+    }
+
+    public function setStringId(string $stringId): self
+    {
+        $this->stringId = $stringId;
+
+        return $this;
     }
 }

@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-simplexml": "*",
+        "ext-dom": "*",
         "matatirosoln/doctrine-fm-data-api-driver": "^0.5.4",
         "symfony/apache-pack": "^1.0",
         "symfony/console": "5.0.*",

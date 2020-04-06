@@ -10,15 +10,19 @@
                 <th>ID</th>
                 <th>French</th>
                 <th>English</th>
+                <th>Swedish</th>
             </tr>
         </thead>
         <tbody>
             {% for translation in translations %}
-                <tr {% if translation.french == translation.english %}class="untranslated"{% endif %}>
+                <tr>
                     <td>{{ translation.stringId }}</td>
                     <td>{{ translation.french }}</td>
-                    <td style="width:45%">
-                        <textarea class="form-control string-translation" data-uuid="{{ translation.uuid }}">{{ translation.english }}</textarea>
+                    <td {% if translation.french == translation.english %}class="untranslated" {% endif %}style="width:33%">
+                        <textarea class="form-control string-translation" data-language="english" data-uuid="{{ translation.uuid }}">{{ translation.english }}</textarea>
+                    </td>
+                    <td {% if translation.french == translation.swedish or translation.swedish == '' %}class="untranslated" {% endif %}style="width:33%">
+                        <textarea class="form-control string-translation" data-language="swedish" data-uuid="{{ translation.uuid }}">{{ translation.swedish }}</textarea>
                     </td>
                 </tr>
             {% endfor %}

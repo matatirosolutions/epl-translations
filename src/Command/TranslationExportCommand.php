@@ -34,7 +34,10 @@ class TranslationExportCommand extends Command
     {
         $this
             ->setDescription('Export translations')
-            ->addArgument('path', InputArgument::OPTIONAL, 'File, including full path to export to. Existing files will be overwritten.')
+            ->addArgument('locale', InputArgument::REQUIRED,
+                'The language identifier which should be exported as the target language, i.e. en_NZ or se')
+            ->addArgument('path', InputArgument::REQUIRED,
+                'File, including full path to export to. Existing files will be overwritten.')
         ;
     }
 
@@ -42,12 +45,18 @@ class TranslationExportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        if(!in_array($input->getArgument('locale'), ['en_NZ', 'se'])) {
+            $io->error('The only supported locale are \'en_NZ\' and \'se\'');
+            return -1;
+        }
+
         try {
             $translations = $this->entityManager->getRepository(Translation::class)
                 ->findAll();
             $this->writeToFile(
                 $input->getArgument('path'),
-                $this->convertFromDB($translations)
+                $input->getArgument('locale'),
+                $this->convertFromDB($input->getArgument('locale'), $translations)
             );
         } catch (RuntimeException $exception) {
             $io->error($exception->getMessage());
@@ -61,27 +70,35 @@ class TranslationExportCommand extends Command
      * @param Translation[]|object[] $translations
      * @return SimpleXMLElement
      */
-    private function convertFromDB($translations): SimpleXMLElement
+    private function convertFromDB(string $locale, $translations): SimpleXMLElement
     {
-        $xml = $this->createEmptyXliffFile();
+        $xml = $this->createEmptyXliffFile($locale);
 
         foreach($translations as $translation) {
             $trans = $xml->{'file'}->{'body'}->addChild('trans-unit');
             $trans->addAttribute('id', $this->cleanContent($translation->getStringId()));
             $trans->addAttribute('resname', $this->cleanContent($translation->getStringId()));
             $trans->addChild('source', $this->cleanContent($translation->getFrench()));
-            $trans->addChild('target', $this->cleanContent($translation->getEnglish()));
+
+            switch($locale){
+                case 'en_NZ':
+                    $trans->addChild('target', $this->cleanContent($translation->getEnglish()));
+                    break;
+                case 'se':
+                    $trans->addChild('target', $this->cleanContent($translation->getSwedish()));
+                    break;
+            }
         }
 
         return $xml;
     }
 
-    private function createEmptyXliffFile(): SimpleXMLElement
+    private function createEmptyXliffFile($language): SimpleXMLElement
     {
         $xml = new SimpleXMLElement('<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2"/>');
         $file = $xml->addChild('file');
         $file->addAttribute('source-language', 'fr');
-        $file->addAttribute('target-language', 'en');
+        $file->addAttribute('target-language', $language);
         $file->addAttribute('datatype', 'plaintext');
         $file->addAttribute('original', 'file.ext');
         $file->addChild('body');
@@ -102,8 +119,15 @@ class TranslationExportCommand extends Command
         return $clean;
     }
 
-    private function writeToFile(string $path, SimpleXMLElement $xml): void
+    private function writeToFile(string $path, string $locale, SimpleXMLElement $xml): void
     {
-        file_put_contents($path, $xml->asXML());
+        $file = $path . (substr($path, -1) === DIRECTORY_SEPARATOR ? '' : DIRECTORY_SEPARATOR) .
+            'translations' . DIRECTORY_SEPARATOR .
+            'messages+intl-icu.' . $locale . '.xlf';
+
+        $dom = dom_import_simplexml($xml)->ownerDocument;
+        $dom->formatOutput = true;
+
+        file_put_contents($file, $dom->saveXML());
     }
 }

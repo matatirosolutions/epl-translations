@@ -16,12 +16,13 @@ require('summernote');
 
 $(document).ready(function() {
     $('.string-translation').change(function() {
-        var row = $(this).parents('tr'),
-            id = $(this).data('uuid');
-        $.post('/translation/string/' + id, {text: $(this).val()}, function(resp) {
+        var cell = $(this).parents('td'),
+            id = $(this).data('uuid'),
+            language = $(this).data('language');
+        $.post('/translation/string/' + id + '/' + language, {text: $(this).val()}, function(resp) {
             if(resp.success) {
                 toastr["success"]("Saved");
-                row.removeClass('untranslated');
+                cell.removeClass('untranslated');
             } else {
                 toastr["error"]("Something went wrong. Please try again later");
             }
@@ -34,9 +35,10 @@ $(document).ready(function() {
             contents: 'Save',
             tooltip: 'Save changes',
             click: function () {
-                var element = $('.page'),
-                    id = element.data('uuid');
-                $.post('/translation/page/' + id, {text: element.summernote('code')}, function() {
+                var element = $(this).parents('.col-4').find('.page'),
+                    id = element.data('uuid'),
+                    language = element.data('language');
+                $.post('/translation/page/' + id + '/' + language, {text: element.summernote('code')}, function() {
                     toastr["success"]("Saved")
                 });
                 return false;

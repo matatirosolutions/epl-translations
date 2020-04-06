@@ -38,7 +38,10 @@ class PageExportCommand extends Command
     {
         $this
             ->setDescription('Export page translations')
-            ->addArgument('path', InputArgument::OPTIONAL, 'Path to export to. Existing files will be overwritten.')
+            ->addArgument('locale', InputArgument::REQUIRED,
+                'The locale which should be exported as the target language, i.e. en_NZ or se')
+            ->addArgument('path', InputArgument::OPTIONAL,
+                'Path to the EPL project templates folder. Existing files will be overwritten.')
         ;
     }
 
@@ -46,16 +49,26 @@ class PageExportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        if(!in_array($input->getArgument('locale'), ['en_NZ', 'se'])) {
+            $io->error('The only supported locale are \'en_NZ\' and \'se\'');
+            return -1;
+        }
+
         try {
             $template = $this->loadTemplate();
 
             /** @var Page[] $pages */
             $pages = $this->entityManager->getRepository(Page::class)
                 ->findAll();
+            $filePath = $this->verifyFilePath(
+                $input->getArgument('path'),
+                $input->getArgument('locale')
+            );
+
             foreach($pages as $page) {
                 $this->writeToFile(
-                    $this->setPageFilePath($input->getArgument('path'), $page),
-                    $this->populateTemplate($template, $page)
+                    $this->setPageFilePath($filePath, $page),
+                    $this->populateTemplate($input->getArgument('locale'), $template, $page)
                 );
             }
 
@@ -74,14 +87,33 @@ class PageExportCommand extends Command
             'pages-template.html.twig');
     }
 
-    private function setPageFilePath(string $path, Page $page)
+    private function verifyFilePath(string $path, string $locale): string
     {
-        return $path . (substr($path, -1) === DIRECTORY_SEPARATOR ? '' : DIRECTORY_SEPARATOR) .
-            $page->getFile() . '.html.twig';
+        $fullPath = $path . (substr($path, -1) === DIRECTORY_SEPARATOR ? '' : DIRECTORY_SEPARATOR) .
+            'templates' . DIRECTORY_SEPARATOR .
+            'content' . DIRECTORY_SEPARATOR .
+            $locale . DIRECTORY_SEPARATOR;
+
+        if(!is_dir($fullPath)) {
+            if (!mkdir($fullPath) && !is_dir($fullPath)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $fullPath));
+            }
+        }
+
+        return $fullPath;
     }
 
-    private function populateTemplate($template, Page $page): string
+    private function setPageFilePath(string $path, Page $page): string
     {
+        return $path . $page->getFile() . '.html.twig';
+    }
+
+    private function populateTemplate(string $language, string $template, Page $page): string
+    {
+        if('se' === $language) {
+            return str_replace('#content#', $page->getSwedish(), $template);
+        }
+
         return str_replace('#content#', $page->getEnglish(), $template);
     }
 

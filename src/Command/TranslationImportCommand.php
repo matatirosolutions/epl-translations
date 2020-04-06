@@ -33,8 +33,11 @@ class TranslationImportCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Import an xlf file')
-            ->addArgument('path', InputArgument::REQUIRED, 'Path to the file to upload')
+            ->setDescription(
+                'Import an xlf file - this will update the French to match existing translations '.
+                '(without changing the English or Swedish if they exist), plus create any new translations.')
+            ->addArgument('path', InputArgument::REQUIRED,
+                'Path to the file folder containing messages+intl-icu.fr.xlf')
         ;
     }
 
@@ -72,12 +75,18 @@ class TranslationImportCommand extends Command
 
     private function loadXLFFile(string $path)
     {
-        if(!file_exists($path)) {
-            throw new \RuntimeException(sprintf('File at %s does not exist', $path));
+        $file = $path . (substr($path, -1) === DIRECTORY_SEPARATOR ? '' : DIRECTORY_SEPARATOR) .
+            'translations' . DIRECTORY_SEPARATOR .
+            'messages+intl-icu.fr.xlf';
+
+        if(!file_exists($file)) {
+            throw new \RuntimeException(
+                sprintf('File messages+intl-icu.fr.xlf does not exist in the translations folder at path %s', $path)
+            );
         }
 
         return simplexml_load_string (
-            file_get_contents($path)
+            file_get_contents($file)
         );
     }
 
@@ -95,11 +104,12 @@ class TranslationImportCommand extends Command
     private function loadOrCreateTranslation(string $id, \SimpleXMLElement $trans): Translation
     {
         $translation = $this->entityManager->getRepository(Translation::class)
-            ->find($id);
+            ->findOneBy(['stringId' => $id]);
         if(null === $translation) {
             $translation = (new Translation())
-                ->setUuid($id)
-                ->setEnglish($trans->{'target'});
+                ->setStringId($id)
+                ->setEnglish($trans->{'target'})
+                ->setSwedish($trans->{'target'});
             $this->entityManager->persist($translation);
         }
         return $translation;

@@ -35,12 +35,12 @@ class TranslationController extends AbstractController
     }
 
     /**
-     * @Route("/string/{uuid}", name="string_edit")
+     * @Route("/string/{uuid}/{language}", name="string_edit")
      */
-    public function saveString(string $uuid, EntityManagerInterface $em, Request $request): JsonResponse
+    public function saveString(EntityManagerInterface $em, Request $request, string $uuid, string $language): JsonResponse
     {
         $translation = $em->getRepository(Translation::class)->find($uuid);
-        $translation->setEnglish($request->request->get('text'));
+        $translation->{"set$language"}($request->request->get('text'));
         $em->flush();
 
         return new JsonResponse(['success' => true]);
@@ -70,13 +70,13 @@ class TranslationController extends AbstractController
     }
 
     /**
-     * @Route("/page/{uuid}", name="page_post", methods={"POST"})
+     * @Route("/page/{uuid}/{language}", name="page_post", methods={"POST"})
      */
-    public function pagePost(string $uuid, EntityManagerInterface $em, Request $request)
+    public function pagePost(EntityManagerInterface $em, Request $request, string $uuid, string $language)
     {
         $repo = $em->getRepository(Page::class);
         $page = $repo->find($uuid);
-        $page->setEnglish($request->request->get('text'));
+        $page->{"set$language"}($request->request->get('text'));
         $em->flush();
 
         return new JsonResponse(['success' => true]);

@@ -36,6 +36,11 @@ class Page
     private $english;
 
     /**
+     * @ORM\Column(name="Swedish", type="text", nullable=true)
+     */
+    private $swedish;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="Title", type="string", length=255)
@@ -81,6 +86,18 @@ class Page
     public function setEnglish(?string $english): self
     {
         $this->english = $english;
+
+        return $this;
+    }
+
+    public function getSwedish(): ?string
+    {
+        return $this->swedish;
+    }
+
+    public function setSwedish(?string $swedish): self
+    {
+        $this->swedish = $swedish;
 
         return $this;
     }

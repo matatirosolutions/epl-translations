@@ -8,23 +8,23 @@ As well as providing a web interface for editors to use there are three commands
 
 This will update the database used by the site to include any new or modified translations. For translations which already exist only the French will be updated. For new translations all three languages will be set to the French version.
 ```
-bin/console translations:import path
+bin/console translation:import path
 ```
 
- - `path` should be the path to the project folder, e.g. `var/www/enpremiereligne.fr`. The correct file will be retrieved from the translations folder.
+ - `path` should be the path to the project folder, e.g. `/var/www/enpremiereligne.fr`. The correct file will be retrieved from the translations folder.
 
 It's unlikely that this command will be needed unless new functionality is added to the EPL site.
 
 ## Export strings
 
-This command allows the strings to be exported into an .xlf file according to the path provided
+This command allows the strings to be exported into an .xlf file in the correct location in the path provided.
 
  ```
- bin/console translations:import locale path
+ bin/console translation:export:strings locale path
  ```
  
  - `locale` indicates which locale to export. Possible options are either `en_NZ` or `se`.
- - `path` should be the path to the project folder, e.g. `var/www/enpremiereligne.fr`. The correctly-named file for the locale will be created in the translations folder at this path. 
+ - `path` should be the path to the project folder, e.g. `/var/www/enpremiereligne.fr`. The correctly-named file for the locale will be created in the translations folder at this path. 
  
  
  ## Export pages
@@ -32,11 +32,11 @@ This command allows the strings to be exported into an .xlf file according to th
  This command allows the pages to be exported into Twig templates in the correct folder for the locale in the path provided
  
   ```
-  bin/console translations:import locale path
+  bin/console translation:export:pages locale path
   ```
   
   - `locale` indicates which locale to export. Possible options are either `en_NZ` or `se`.
-  - `path` should be the path to the project folder, e.g. `var/www/enpremiereligne.fr`. The various template files will be created in an appropriate folder at this path. 
+  - `path` should be the path to the project folder, e.g. `/var/www/enpremiereligne.fr`. The various template files will be created in an appropriate folder at this path. 
 
   
 ## Contact
